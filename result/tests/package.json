@@ -1,0 +1,8 @@
+{
+  "name": "result-tests",
+  "version": "1.0.0",
+  "description": "Integration tests for result service",
+  "dependencies": {
+    "@playwright/test": "^1.44.0"
+  }
+}

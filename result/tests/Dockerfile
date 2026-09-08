@@ -1,5 +1,14 @@
-FROM node
-RUN npm install -g phantomjs
-ADD . /app
+
+
+FROM mcr.microsoft.com/playwright:v1.44.0-jammy
+
 WORKDIR /app
-CMD ["/app/tests.sh"]
+
+COPY package.json ./
+
+RUN npm install
+
+COPY . .
+
+# tests.sh waits for services, casts a vote, then runs the JS test
+CMD ["/bin/sh", "/app/tests.sh"]
