@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: vote
+  namespace: voting
+
+spec:
+  revisionHistoryLimit: 1
+
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vote
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+  template:
+
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+
+      labels:
+        app: vote
+
+    spec:
+
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/vote
+                      operator: In
+                      values:
+                        - vote
+      containers:
+
+        - name: vote
+
+          image: docker0.azurecr.io/vote:v1
+          imagePullPolicy: Always
+
+          envFrom:
+            - configMapRef:
+                name: vote-env
+
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+
+            limits:
+              cpu: 250m
+              memory: 256Mi
+
+          
